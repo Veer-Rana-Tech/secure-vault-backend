@@ -1,10 +1,8 @@
 package com.Abhishek.authify.controller;
 
-import com.Abhishek.authify.entity.UserEntity;
 import com.Abhishek.authify.io.AuthRequest;
 import com.Abhishek.authify.io.AuthResponse;
 import com.Abhishek.authify.io.ResetPasswordRequest;
-import com.Abhishek.authify.repository.UserRepostory;
 import com.Abhishek.authify.service.AppUsersDetailsService;
 import com.Abhishek.authify.service.ProfileService;
 import com.Abhishek.authify.util.JwtUtil;
@@ -26,8 +24,6 @@ import org.springframework.security.core.annotation.CurrentSecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import org.springframework.security.crypto.password.PasswordEncoder;
-
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
@@ -43,44 +39,6 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final AppUsersDetailsService appUsersDetailsService;
     private final ProfileService profileService;
-
-    private final UserRepostory userRepostory;
-    private final PasswordEncoder passwordEncoder;
-
-    // ================= REGISTER =================
-
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Map<String, String> request) {
-
-        try {
-
-            String email = request.get("email");
-            String password = request.get("password");
-
-            if (email == null || password == null) {
-                return ResponseEntity.badRequest().body("Email and password required");
-            }
-
-            if (userRepostory.findByEmail(email).isPresent()) {
-                return ResponseEntity.badRequest().body("User already exists");
-            }
-
-            UserEntity user = new UserEntity();
-
-            user.setEmail(email);
-            user.setPassword(passwordEncoder.encode(password));
-
-            userRepostory.save(user);
-
-            return ResponseEntity.ok("Registration successful");
-
-        } catch (Exception e) {
-
-            return ResponseEntity
-                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(e.getMessage());
-        }
-    }
 
     // ================= LOGIN =================
 
